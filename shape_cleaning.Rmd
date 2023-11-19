@@ -1,0 +1,92 @@
+---
+title: "project data cleaning"
+author: "Gustavo Garcia-Franceschini"
+date: "`r Sys.Date()`"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r libraries}
+library(sf)
+library(sfheaders)
+library(tidyverse)
+```
+
+# Air Quality Data
+
+```{r air_data}
+df_air = read_csv("raw_data/air_quality.csv") %>%
+  janitor::clean_names() %>%
+  select(-message) %>%
+  mutate(id = as.character(geo_join_id)) %>%
+  filter(geo_type_name == "UHF42")
+```
+
+# Shape Files
+
+```{r air_shapes}
+air_shapes = read_sf(dsn = "raw_shapes/", layer = "UHF42")
+```
+
+```{r zip_shapes_and_projections}
+zip_codes = read_csv("raw_data/nyc-zip-codes.csv") %>%
+  mutate(zip = as.character(ZipCode))
+
+zip_shapes = read_sf(dsn = "raw_shapes/", layer = 'tl_2019_us_zcta510') %>% 
+  rename(zip = ZCTA5CE10) %>%
+  inner_join(zip_codes) %>%
+  st_transform(crs= st_crs(air_shapes)) %>%
+  sf_to_df(fill = T) %>%
+  mutate(x_center = as.numeric(INTPTLON10),
+         y_center = as.numeric(INTPTLAT10)) %>%
+  janitor::clean_names()
+
+air_shapes = air_shapes %>%
+  sf_to_df(fill = T) %>%
+  janitor::clean_names() %>%
+  mutate(geo_join_id = as.numeric(id)) %>%
+  filter(id != "0")
+```
+
+# Example map
+
+The map shows the 42 UHF neighborhoods (colors), with the zip code bounds drawn over the colors.
+
+```{r example_map}
+ggplot() + geom_polygon(data = air_shapes, 
+                        aes(x = x, y = y, group = id, fill = id)) + 
+  theme_void() + geom_polygon(data = zip_shapes, aes(x = x, y = y, group = zip),
+                              colour = "black", alpha = 0) + 
+  theme(legend.position = "none")
+```
+
+# Joining Air Data with UHF Shape files 
+
+Before joining, I think you should make `df_air` smaller (by choosing a specific year and name to track).
+
+```{r}
+#df_air_shapes = df_air %>%
+#  inner_join(air_shapes, by = "id")
+```
+
+# Joining with zip code data
+
+Joining these will be hard because the neighborhoods don't have the same names. We don't have to join them for the maps, but we'd need to join them for regression.
+
+```{r why_joining_will_be_hard}
+sort(unique(df_air$geo_place_name))
+
+sort(unique(zip_codes$Neighborhood))
+```
+
+# Exporting air and zip shape files
+
+```{r shape_export}
+write_csv(air_shapes, "cleaned_shapes/air_shapes.csv")
+
+write_csv(zip_shapes, "cleaned_shapes/zip_shapes.csv")
+```
+
