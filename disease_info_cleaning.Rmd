@@ -13,7 +13,7 @@ library(janitor)
 
 
 ```{r}
-disease_hospital_admin <- read_csv('raw_data/disease_hospital_admin.csv',
+disease_solo <- read_csv('raw_data/disease_hospital_admin.csv',
                                    col_types = cols(
                                      `date` = col_date(format = "%m/%d/%Y"),
                                      `total_ed_visits` = col_integer(),
@@ -58,13 +58,13 @@ zip_shapes <- read_csv('raw_data/nyc-zip-codes.csv') %>%
 
 ```{r}
 #there are 178 unique zips in disease
-unique(disease_hospital_admin$zip_code)
+unique(disease_solo$zip_code)
 ```
 
 
 ```{r}
 #joining disease w zip
-disease_zip <- left_join(disease_hospital_admin, zip_shapes, by = 'zip_code')
+disease_zip <- left_join(disease_solo, zip_shapes, by = 'zip_code')
 ```
 
 
@@ -97,17 +97,11 @@ air_quality <- read_csv('raw_data/air_quality.csv') %>%
   select(-message)
 ```
 
-```{r}
-zip_shapes %>%
-  filter()
-```
-
-
 
 ```{r}
 #downloading updated data
 #cleaned disease solo data
-write_csv(disease_hospital_admin, 'cleaned_disease_files/disease_hospital_admin.csv')
+write_csv(disease_solo, 'cleaned_disease_files/disease_solo.csv')
 
 #cleaned joined disease & zip data
 write_csv(disease_zip, 'cleaned_disease_files/disease_zip.csv')
