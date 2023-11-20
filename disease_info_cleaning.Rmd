@@ -8,6 +8,7 @@ output: html_document
 ```{r, message = FALSE, include = FALSE}
 library(tidyverse)
 library(readr)
+library(janitor)
 ```
 
 
@@ -31,7 +32,8 @@ disease_hospital_admin <- read_csv('raw_data/disease_hospital_admin.csv',
     month == '09' ~ 'September',
     month == '10' ~ 'October',
     month == '11' ~ 'November',
-    month == '12' ~ 'December'))
+    month == '12' ~ 'December')) %>%
+  rename(zip_code = mod_zcta)
 ```
 
 - `extract_date`: using 12/05/2022, this is the last extraction and most up-to-date data
@@ -48,12 +50,68 @@ disease_hospital_admin <- read_csv('raw_data/disease_hospital_admin.csv',
 
 
 
-
 ```{r}
 #loading zip shapes file
-#zip_shapes <- read_csv('raw_data/zip_shapes.csv')
+zip_shapes <- read_csv('raw_data/nyc-zip-codes.csv') %>%
+  clean_names()
 ```
 
+```{r}
+#there are 178 unique zips in disease
+unique(disease_hospital_admin$zip_code)
+```
+
+
+```{r}
+#joining disease w zip
+disease_zip <- left_join(disease_hospital_admin, zip_shapes, by = 'zip_code')
+```
+
+
+```{r}
+#total number of na's now: 5172
+#this is including both borough and neigh
+#so total of 2586 rows with NA's
+#meaning some zipcodes didn't match
+sum(is.na(disease_zip))
+```
+
+```{r}
+#this shows how which rows have NA's
+#4 unique zip codes with NA's:
+#10069
+#11109
+#10282
+#10000
+disease_zip %>%
+  select(zip_code, borough, neighborhood) %>%
+  filter(is.na(borough)) %>%
+  unique()
+```
+
+
+```{r}
+#loading air quality datasets
+air_quality <- read_csv('raw_data/air_quality.csv') %>%
+  clean_names() %>%
+  select(-message)
+```
+
+```{r}
+zip_shapes %>%
+  filter()
+```
+
+
+
+```{r}
+#downloading updated data
+#cleaned disease solo data
+write_csv(disease_hospital_admin, 'cleaned_disease_files/disease_hospital_admin.csv')
+
+#cleaned joined disease & zip data
+write_csv(disease_zip, 'cleaned_disease_files/disease_zip.csv')
+```
 
 
 
