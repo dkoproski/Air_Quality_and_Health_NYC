@@ -29,6 +29,7 @@ library(tidyverse)
 # Air Quality Data
 
 ``` r
+#source: https://data.cityofnewyork.us/Environment/Air-Quality/c3uy-2p5r
 df_air = read_csv("raw_data/air_quality.csv") %>%
   janitor::clean_names() %>%
   select(-message) %>%
@@ -62,10 +63,12 @@ This code involves:
 - changing everything to regular datasets for easier plotting
 
 ``` r
+#source: https://github.com/nycehs/NYC_geography/tree/master
 air_shapes = read_sf(dsn = "raw_shapes/", layer = "UHF42")
 ```
 
 ``` r
+#source: https://github.com/erikgregorywebb/nyc-housing/blob/master/Data/nyc-zip-codes.csv
 zip_codes = read_csv("raw_data/nyc-zip-codes.csv") %>%
   mutate(zip = as.character(ZipCode)) %>%
   select(-ZipCode) %>%
@@ -82,6 +85,7 @@ zip_codes = read_csv("raw_data/nyc-zip-codes.csv") %>%
     ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 
 ``` r
+#source: https://catalog.data.gov/dataset/tiger-line-shapefile-2019-2010-nation-u-s-2010-census-5-digit-zip-code-tabulation-area-zcta5-na 
 zip_shapes = read_sf(dsn = "raw_shapes/", layer = 'tl_2019_us_zcta510') %>% 
   rename(zip = ZCTA5CE10) %>%
   inner_join(zip_codes) %>%

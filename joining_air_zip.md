@@ -68,6 +68,7 @@ zip_shapes = read_sf(dsn = "raw_shapes/", layer = 'tl_2019_us_zcta510') %>%
     ## Warning: st_point_on_surface assumes attributes are constant over geometries
 
 ``` r
+#source: https://dewey.dunnington.ca/post/2022/profiling-point-in-polygon-joins-in-r/
 uhf_contains_zips = st_join(zip_shapes, air_shapes, join = st_within) %>%
   sf_to_df(fill = T)  %>%
   select(zip, id)
