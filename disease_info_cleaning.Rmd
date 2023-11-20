@@ -49,6 +49,11 @@ disease_hospital_admin <- read_csv('raw_data/disease_hospital_admin.csv',
 
 
 
+```{r}
+#loading zip shapes file
+#zip_shapes <- read_csv('raw_data/zip_shapes.csv')
+```
+
 
 
 
