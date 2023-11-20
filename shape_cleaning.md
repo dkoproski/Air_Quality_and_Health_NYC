@@ -48,6 +48,19 @@ df_air = read_csv("raw_data/air_quality.csv") %>%
 
 # Shape Files
 
+This code involves:
+
+- loading the shape files using the `sf` package
+
+- loading the `zip_codes` dataset so we can know which of the zip codes
+  in the `zip_shapes` dataset are from NYC (as opposed to other parts of
+  New York).
+
+- transforming the `zip_shapes` dataset from regular coordinates to
+  EPSG:2263
+
+- changing everything to regular datasets for easier plotting
+
 ``` r
 air_shapes = read_sf(dsn = "raw_shapes/", layer = "UHF42")
 ```
