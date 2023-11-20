@@ -54,7 +54,9 @@ air_shapes = read_sf(dsn = "raw_shapes/", layer = "UHF42")
 
 ``` r
 zip_codes = read_csv("raw_data/nyc-zip-codes.csv") %>%
-  mutate(zip = as.character(ZipCode))
+  mutate(zip = as.character(ZipCode)) %>%
+  select(-ZipCode) %>%
+  janitor::clean_names()
 ```
 
     ## Rows: 178 Columns: 3
@@ -168,7 +170,7 @@ sort(unique(df_air$geo_place_name))
     ## [42] "Willowbrook"
 
 ``` r
-sort(unique(zip_codes$Neighborhood))
+sort(unique(zip_codes$neighborhood))
 ```
 
     ##  [1] "Borough Park"                  "Bronx Park and Fordham"       

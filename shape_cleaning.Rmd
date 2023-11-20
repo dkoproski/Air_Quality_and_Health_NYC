@@ -33,7 +33,9 @@ air_shapes = read_sf(dsn = "raw_shapes/", layer = "UHF42")
 
 ```{r zip_shapes_and_projections}
 zip_codes = read_csv("raw_data/nyc-zip-codes.csv") %>%
-  mutate(zip = as.character(ZipCode))
+  mutate(zip = as.character(ZipCode)) %>%
+  select(-ZipCode) %>%
+  janitor::clean_names()
 
 zip_shapes = read_sf(dsn = "raw_shapes/", layer = 'tl_2019_us_zcta510') %>% 
   rename(zip = ZCTA5CE10) %>%
@@ -81,7 +83,7 @@ Joining these will be hard because the neighborhoods don't have the same names. 
 ```{r why_joining_will_be_hard}
 sort(unique(df_air$geo_place_name))
 
-sort(unique(zip_codes$Neighborhood))
+sort(unique(zip_codes$neighborhood))
 ```
 
 # Exporting air and zip shape files
