@@ -71,9 +71,9 @@ zip_shapes = read_sf(dsn = "raw_shapes/", layer = 'tl_2019_us_zcta510') %>%
   rename(zip = ZCTA5CE10) %>%
   inner_join(zip_codes) %>%
   st_transform(crs= st_crs(air_shapes)) %>%
-  sf_to_df(fill = T) %>%
-  mutate(x_center = as.numeric(INTPTLON10),
-         y_center = as.numeric(INTPTLAT10)) %>%
+  mutate(x_center = map_dbl(geometry, ~st_point_on_surface(.x)[[1]]),
+         y_center = map_dbl(geometry, ~st_point_on_surface(.x)[[2]])) %>%
+  sf_to_df(fill = T)  %>%
   janitor::clean_names()
 ```
 
@@ -94,9 +94,11 @@ bounds drawn over the colors.
 
 ``` r
 ggplot() + geom_polygon(data = air_shapes, 
-                        aes(x = x, y = y, group = id, fill = id)) + 
-  theme_void() + geom_polygon(data = zip_shapes, aes(x = x, y = y, group = zip),
-                              colour = "black", alpha = 0) + 
+                        aes(x = x, y = y, group = id), 
+                        fill = "white", color = "black") + 
+  theme_void() + geom_point(data = zip_shapes, 
+                            aes(x = x_center, y = y_center, 
+                                color = neighborhood)) + 
   theme(legend.position = "none")
 ```
 
