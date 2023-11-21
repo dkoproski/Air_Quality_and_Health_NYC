@@ -67,6 +67,9 @@ write_csv(joined_datasets, "cleaned_data/air_quality_zips.csv")
 df_air_geo = 
   read_csv("cleaned_shapes/zip_shapes.csv") |> 
   select(zip, intptlat10, intptlon10) |> 
-  left_join(read_csv("cleaned_data/air_quality_zips.csv"), by = "zip")
+  left_join(read_csv("cleaned_data/air_quality_zips.csv"), by = "zip") |> 
+  mutate(lat = intptlat10,
+         lon = intptlon10) |> 
+  select(-intptlat10, -intptlon10)
 ```
 
