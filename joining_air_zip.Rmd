@@ -60,3 +60,13 @@ joined_datasets = df_air %>%
 
 write_csv(joined_datasets, "cleaned_data/air_quality_zips.csv")
 ```
+
+# Joining data with lat,log
+
+```{r}
+df_air_geo = 
+  read_csv("cleaned_shapes/zip_shapes.csv") |> 
+  select(zip, intptlat10, intptlon10) |> 
+  left_join(read_csv("cleaned_data/air_quality_zips.csv"), by = "zip")
+```
+
