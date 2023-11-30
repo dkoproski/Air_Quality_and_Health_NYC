@@ -103,7 +103,8 @@ df_air = df_air %>%
   left_join(zip_contains_site) %>%
   select(-count) %>%
   rename(zip_code = zip) %>% 
-  sf_to_df(fill = T)
+  sf_to_df(fill = T) %>%
+  filter(!is.na(zip_code)) #Only keeping sites inside NYC
 ```
 
 # Uploading Data
